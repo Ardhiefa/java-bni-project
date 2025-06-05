@@ -1,0 +1,57 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: bni-app # Label untuk aplikasi Anda
+  name: bni-app   # Nama DeploymentConfig
+spec:
+  replicas: 1
+  selector:
+    app: bni-app
+  template:
+    metadata:
+      labels:
+        app: bni-app
+    spec:
+      containers:
+        - name: bni-app
+          image: image-registry.openshift-image-registry.svc:5000/your-project/bni-app:latest # <--- GANTI INI dengan image Anda
+          ports:
+            - containerPort: 8080 # Port default Spring Boot
+              protocol: TCP
+          env:
+            # Pastikan variabel lingkungan database sesuai dengan service PostgreSQL Anda
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-db:5432/mydb" # Ganti 'mydb' jika Anda mengubah di postgres-deployment.yaml
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "admin"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "admin123"
+            # Pastikan juga setting ddl-auto jika diperlukan di sini atau biarkan dari application.properties
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health # Endpoint health check
+              port: 8080             # Port aplikasi Anda
+              scheme: HTTP
+            initialDelaySeconds: 60  # Beri waktu startup aplikasi, sesuaikan jika perlu
+            periodSeconds: 10      # Frekuensi pengecekan
+            timeoutSeconds: 5      # Timeout per pengecekan
+            failureThreshold: 3    # Jumlah kegagalan sebelum restart
+          readinessProbe:
+            httpGet:
+              path: /actuator/health # Endpoint health check
+              port: 8080             # Port aplikasi Anda
+              scheme: HTTP
+            initialDelaySeconds: 30  # Beri waktu startup aplikasi sebelum siap menerima traffic
+            periodSeconds: 10      # Frekuensi pengecekan
+            timeoutSeconds: 5      # Timeout per pengecekan
+            failureThreshold: 3    # Jumlah kegagalan sebelum tidak menerima traffic
+          resources: # Opsional: Batasan sumber daya untuk Pod
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 200m
+              memory: 512Mi

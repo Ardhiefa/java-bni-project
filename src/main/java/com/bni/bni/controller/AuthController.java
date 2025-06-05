@@ -1,6 +1,5 @@
 package com.bni.bni.controller;
 
-import com.bni.bni.entity.User;
 import com.bni.bni.service.AuthService;
 import com.bni.bni.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,26 +22,26 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, String> body) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            String username = body.get("username");
-            String password = body.get("password");
-            String email = body.getOrDefault("email", null);
-
-            String message = authService.register(username, password, email);
-
-            response.put("status", message.equals("Registered successfully") ? 200 : 409);
-            response.put("message", message);
-
-            return ResponseEntity.status((int) response.get("status")).body(response);
-        } catch (IllegalArgumentException e) {
+        String username = body.get("username");
+        String password = body.get("password");
+        String emailAddress = body.get("emailAddress");
+            if (emailAddress == null || username == null || password == null) {
+            Map<String, Object> response = new HashMap<>();
             response.put("status", 400);
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        } catch (Exception e) {
-            response.put("status", 500);
-            response.put("message", "Internal Server Error: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            response.put("message", "Username, password, and emailAddress are required.");
+            return ResponseEntity.status(400).body(response);
+        }
+        String message = authService.register(username, password, emailAddress);
+
+        Map<String, Object> response = new HashMap<>();
+        if (message.equals("Registered successfully")) {
+            response.put("status", 200);
+            response.put("message", message);
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("status", 409); // Conflict if user or email exists
+            response.put("message", message);
+            return ResponseEntity.status(409).body(response);
         }
     }
 
@@ -51,23 +49,22 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> body) {
         String username = body.get("username");
         String password = body.get("password");
-
         String token = authService.login(username, password);
 
         Map<String, Object> response = new HashMap<>();
-        if (token != null) {
-            Optional<User> userOpt = authService.getUserByUsername(username);
-            User user = userOpt.get();
-
+        if (token != null && !token.equals("User is not active")) { 
             response.put("status", 200);
             response.put("token", token);
-            response.put("username", user.getUsername());
-            response.put("role", user.getRole());
-            response.put("message", "Login Berhasil");
+            response.put("message", "Login successfully");
             return ResponseEntity.ok(response);
-        } else {
+        } else if (token != null && token.equals("User is not active")) {
+            response.put("status", 403); 
+            response.put("message", token);
+            return ResponseEntity.status(403).body(response);
+        }
+        else {
             response.put("status", 401);
-            response.put("message", "Invalid credentials or inactive account");
+            response.put("message", "Invalid credentials");
             return ResponseEntity.status(401).body(response);
         }
     }
@@ -95,7 +92,6 @@ public class AuthController {
 
             response.put("status", 200);
             response.put("username", claims.getSubject());
-            response.put("role", claims.get("role"));
             response.put("issuedAt", claims.getIssuedAt());
             response.put("expiration", claims.getExpiration());
 

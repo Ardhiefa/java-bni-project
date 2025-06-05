@@ -1,0 +1,12 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: bni-app-route
+spec:
+  to:
+    kind: Service
+    name: bni-app-service # Nama service Anda
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge

@@ -4,7 +4,7 @@ metadata:
   name: postgres-pvc
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce # Ini berarti volume dapat dipasang sebagai baca-tulis oleh satu node.
   resources:
     requests:
-      storage: 1Gi
+      storage: 1Gi # Minta 1 Gigabyte penyimpanan. Anda bisa menyesuaikannya.

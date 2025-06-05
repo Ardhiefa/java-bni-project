@@ -5,7 +5,7 @@ This is a simple Spring Boot API that provides user **registration** and **login
 ---
 
 ## 🚀 Features
-hhh
+
 - User registration (`/api/auth/register`)
 - User login (`/api/auth/login`)
 - Password encryption with BCrypt

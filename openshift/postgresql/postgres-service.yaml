@@ -4,7 +4,7 @@ metadata:
   name: postgres-db
 spec:
   selector:
-    app: postgres-db
+    app: postgres-db # Pilih pod dengan label app: postgres-db
   ports:
-    - port: 5432
-      targetPort: 5432
+    - port: 5432       # Port yang akan diekspos oleh Service
+      targetPort: 5432 # Port yang didengarkan oleh kontainer PostgreSQL

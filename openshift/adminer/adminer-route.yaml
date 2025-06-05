@@ -5,8 +5,8 @@ metadata:
 spec:
   to:
     kind: Service
-    name: adminer
+    name: adminer # Ganti dengan nama service yang sesuai
   port:
-    targetPort: 8080
+    targetPort: 8080 # Ganti dengan port yang sesuai jika berbeda
   tls:
-    termination: edge
+    termination: edge # Gunakan 'edge' untuk TLS termination di route
