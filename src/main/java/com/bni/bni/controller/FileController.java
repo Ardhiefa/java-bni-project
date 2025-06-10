@@ -29,13 +29,14 @@ public class FileController {
                 Files.createDirectories(uploadPath);
             }
             final var filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            final var filePath = Paths.get(uploadDir, filename).resolve(filename).normalize();
+            final var filePath = uploadPath.resolve(filename).normalize();
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             final var fileUrl = "/api/files/" + filename;
-            
+
             return ResponseEntity.ok(Map.of(
                     "status", 200,
                     "message", "File uploaded successfully",
+                    "filename", filename,
                     "fileUrl", fileUrl
             ));
         } catch (Exception e) {
