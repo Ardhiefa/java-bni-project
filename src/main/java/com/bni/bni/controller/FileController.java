@@ -63,8 +63,8 @@ public class FileController {
             }
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                    .body(resource);
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
 
         } catch (MalformedURLException e) {
             return ResponseEntity.notFound().build();
