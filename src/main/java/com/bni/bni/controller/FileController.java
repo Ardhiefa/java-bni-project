@@ -53,26 +53,25 @@ public class FileController {
     }
 
     @GetMapping("/{filename:.+}")
-    public ResponseEntity<?> getFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
-            Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (!resource.exists() || !resource.isReadable()) {
+            final var filePath = Paths.get(uploadDir).resolve(filename).normalize();
+            final var resource = new UrlResource(filePath.toUri());
+            if (!resource.exists()) {
                 return ResponseEntity.notFound().build();
             }
 
+            var contentType = Files.probeContentType(filePath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION,"inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
-
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException exception) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                    "status", 500,
-                    "message", "File retrieval failed: " + e.getMessage()
-            ));
+            return ResponseEntity.internalServerError().build();
         }
     }
-}
