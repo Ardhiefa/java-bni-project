@@ -53,7 +53,7 @@ public class FileController {
     }
 
     @GetMapping("/{filename:.+}")
-    public ResponseEntity<?> getFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
             Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
@@ -69,10 +69,7 @@ public class FileController {
         } catch (MalformedURLException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                    "status", 500,
-                    "message", "File retrieval failed: " + e.getMessage()
-            ));
+            return ResponseEntity.internalServerError().build();
         }
     }
 }
