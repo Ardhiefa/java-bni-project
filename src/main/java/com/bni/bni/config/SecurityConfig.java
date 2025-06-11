@@ -36,7 +36,7 @@ public class SecurityConfig {
             .formLogin(form -> form.disable());
 
         return http.build();
-    } //h
+    } 
 
     @Bean
     public PasswordEncoder passwordEncoder() {
