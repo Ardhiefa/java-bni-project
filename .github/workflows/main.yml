@@ -14,16 +14,16 @@ jobs:
 
    
     
-    - name: Install OC CLI
-      run: |
-        curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
-        tar -xzf openshift-client-linux.tar.gz
-        sudo mv oc kubectl /usr/local/bin/
+    # - name: Install OC CLI
+    #   run: |
+    #     curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+    #     tar -xzf openshift-client-linux.tar.gz
+    #     sudo mv oc kubectl /usr/local/bin/
 
-    - name: Login to OpenShift
-      run: |
-        oc login --token="${{secrets.OC_TOKEN}}" --server="${{secrets.OC_SERVER}}"
+    # - name: Login to OpenShift
+    #   run: |
+    #     oc login --token="${{secrets.OC_TOKEN}}" --server="${{secrets.OC_SERVER}}"
 
-    - name: Start OpenShift Build
-      run: |
-        oc start-build "${{secrets.OC_BUILD_NAME}}" -n "${{secrets.OC_NAMESPACE}}" --wait --follow
+    # - name: Start OpenShift Build
+    #   run: |
+    #     oc start-build "${{secrets.OC_BUILD_NAME}}" -n "${{secrets.OC_NAMESPACE}}" --wait --follow
