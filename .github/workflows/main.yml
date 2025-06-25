@@ -12,7 +12,11 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v3
 
-   
+    - name: Send Telegram Notification
+      run: |
+        curl -X POST "https://api.telegram.org/bot7540919637:AAGF4NuM4ZE5klD80vUltmu7vGm7B2DxlWY/sendMessage" \
+          -d chat_id=244440953 \
+          -d text="🚨 Merge to Main/Master Branch 🚨\nA merge has been made to the main/master branch. Please review the changes!"
     
     # - name: Install OC CLI
     #   run: |
